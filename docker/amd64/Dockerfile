@@ -49,7 +49,7 @@ ENV CATKIN_WS=/robot/ros2_ws
 
 #### mqtt_bridge ###
 RUN mkdir -p /robot/ros2_ws/src/mqtt_bridge
-COPY ../.. /robot/ros2_ws/src/mqtt_bridge
+COPY ./mqtt_bridge /robot/ros2_ws/src/mqtt_bridge
 
 # add package specific ros dependencies to workspace
 RUN source /opt/ros/rolling/setup.bash \
@@ -75,7 +75,7 @@ RUN rm -rf /var/lib/apt/lists/*
 # Always source ros_entrypoint.sh when launching bash (e.g. when attaching to container)
 RUN echo "source /ros_entrypoint.sh" >> /root/.bashrc
 
-COPY ros_entrypoint.sh /
+COPY ./mqtt_bridge/docker/amd64/ros_entrypoint.sh /
 RUN chmod +x /ros_entrypoint.sh
 
 ENTRYPOINT ["/ros_entrypoint.sh"]

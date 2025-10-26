@@ -47,6 +47,10 @@ RUN apt-get update \
 # Create local catkin workspace
 ENV CATKIN_WS=/robot/ros2_ws
 
+#### cmeresearch_msgs ###
+RUN mkdir -p /robot/ros2_ws/src/cmeresearch_msgs
+COPY ./cmeresearch_msgs /robot/ros2_ws/src/cmeresearch_msgs
+
 #### mqtt_bridge ###
 RUN mkdir -p /robot/ros2_ws/src/mqtt_bridge
 COPY ./mqtt_bridge /robot/ros2_ws/src/mqtt_bridge

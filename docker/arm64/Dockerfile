@@ -1,4 +1,4 @@
-FROM amd64/ros:rolling-ros-base-noble
+FROM arm64v8/ros:rolling-ros-base-noble
 
 LABEL version="0.1"
 LABEL description="Adaptions for mqtt_bridge to run with ros-rolling"
@@ -49,7 +49,7 @@ ENV CATKIN_WS=/robot/ros2_ws
 
 #### mqtt_bridge ###
 RUN mkdir -p /robot/ros2_ws/src/mqtt_bridge
-COPY . /robot/ros2_ws/src/mqtt_bridge
+COPY ../.. /robot/ros2_ws/src/mqtt_bridge
 
 # add package specific ros dependencies to workspace
 RUN source /opt/ros/rolling/setup.bash \

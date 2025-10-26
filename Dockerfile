@@ -54,12 +54,12 @@ COPY . /robot/ros2_ws/src/mqtt_bridge
 # add package specific ros dependencies to workspace
 RUN source /opt/ros/rolling/setup.bash \
     && cd /robot/ros2_ws/  \
+    && apt-get update \
 #    && rosdep init \
     && rosdep update \
     && rosdep fix-permissions \
     && rosdep install -y -r --from-paths src --ignore-src --rosdistro=rolling -y
 
-RUN apt-get update
 RUN source /opt/ros/rolling/setup.bash \
     && cd /robot/ros2_ws \
     && colcon build
@@ -79,4 +79,4 @@ COPY ros_entrypoint.sh /
 RUN chmod +x /ros_entrypoint.sh
 
 ENTRYPOINT ["/ros_entrypoint.sh"]
-CMD ["ros2", "launch", "mqtt_bridge", "demo.launch.py"]
+CMD ["ros2", "launch", "mqtt_bridge", "cmexa_demo.launch.py"]

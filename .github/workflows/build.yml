@@ -15,6 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ros:jazzy-ros-core
+    env:
+      PIP_BREAK_SYSTEM_PACKAGES: "1"
     steps:
       - uses: ros-tooling/setup-ros@v0.7
       - uses: ros-tooling/action-ros-ci@v0.3

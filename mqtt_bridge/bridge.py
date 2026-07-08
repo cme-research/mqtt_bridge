@@ -57,8 +57,20 @@ class RosToMqttBridge(Bridge):
             self._last_published = now
 
     def _publish(self, msg):
-        payload = self._serialize(extract_values(msg))
-        self._mqtt_client.publish(topic=self._topic_to, payload=payload)
+        # Guard serialization + publish: this runs inside the ROS
+        # subscription callback, and an uncaught exception here silently
+        # kills the bridge for this topic (no message ever reaches MQTT, no
+        # visible error). Messages carrying numeric arrays (e.g. the
+        # pose/twist covariance in nav_msgs/Odometry) are the usual trigger
+        # when a serializer can't handle the array type. Mirror
+        # MqttToRosBridge's error handling so the failure is logged and the
+        # callback keeps running instead of the topic going dark.
+        try:
+            payload = self._serialize(extract_values(msg))
+            self._mqtt_client.publish(topic=self._topic_to, payload=payload)
+        except Exception as e:
+            self.ros_node.get_logger().error(
+                f"Failed to publish ROS->MQTT msg on {self._topic_to}: {e}")
 
 
 class MqttToRosBridge(Bridge):

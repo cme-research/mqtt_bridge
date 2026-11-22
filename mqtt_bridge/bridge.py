@@ -104,7 +104,10 @@ class MqttToRosBridge(Bridge):
                 self._publisher.publish(ros_msg)
                 self._last_published = now
             except Exception as e:
-                self.ros_node.get_logger().error(e)
+                # rclpy loggers only accept str; passing the exception object
+                # raised a TypeError inside paho's network-loop callback.
+                self.ros_node.get_logger().error(
+                    f"Failed to convert MQTT msg on {mqtt_msg.topic} to ROS: {e!r}")
 
     def _create_ros_message(self, mqtt_msg: mqtt.MQTTMessage): 
         """ create ROS message from MQTT payload """

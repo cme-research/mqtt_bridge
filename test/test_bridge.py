@@ -183,14 +183,20 @@ def test_ros_to_mqtt_odometry_with_covariance_serializes(ros_node, client, codec
 
 def test_ros_to_mqtt_serializer_error_does_not_raise(ros_node, client):
     """A failing serializer must be logged, not kill the subscription callback."""
-    bridge = create_bridge(
-        'mqtt_bridge.bridge:RosToMqttBridge', 'std_msgs.msg:String',
-        '/chatter', '~/chatter', ros_node=ros_node)
-
     def broken(_):
         raise TypeError('not serializable')
 
-    bridge._serialize = broken
+    # Rebind via the injector (newer inject versions make the attribute read-only).
+    def config(binder):
+        binder.bind(mqtt.Client, client)
+        binder.bind('serializer', broken)
+        binder.bind('deserializer', json.loads)
+        binder.bind('mqtt_private_path_extractor', create_private_path_extractor(PRIVATE_PATH))
+
+    inject.clear_and_configure(config)
+    bridge = create_bridge(
+        'mqtt_bridge.bridge:RosToMqttBridge', 'std_msgs.msg:String',
+        '/chatter', '~/chatter', ros_node=ros_node)
     bridge._callback_ros(String(data='x'))  # must not raise
     assert client.published == []
 
